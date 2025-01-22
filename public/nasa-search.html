@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Search</title>
+    <link href="https://fonts.cdnfonts.com/css/audiowide" rel="stylesheet">
+    <link rel="stylesheet" href="nasa-style.css">
+</head>
+<body>
+    <div class="container" id="search-container">
+        <h1>Search NASA Images & Videos</h1>
+        <div class="search-container">
+            <input type="text" id="search-query" placeholder="Enter search term" />
+            <img src="search.svg" id="search-button" alt="Search" onclick="searchNASA()" />
+        </div>
+    </div>
+    <div id="nasa-results" class="gallery"></div>
+
+    <!-- Модальное окно -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <figure>
+            <img class="modal-content" id="modalImage">
+            <figcaption class="modal-caption1" id="modalCaption"></figcaption>
+        </figure>
+    </div>
+
+    <script>
+        function searchNASA() {
+            const query = document.getElementById('search-query').value;
+            
+            // Добавляем класс для фиксирования контейнера сверху
+            document.getElementById('search-container').classList.add('fixed');
+            
+            fetch(`/api/nasa-search?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('nasa-results');
+                    resultsContainer.innerHTML = '';
+                    data.collection.items.forEach(item => {
+                        const photoCard = document.createElement('div');
+                        photoCard.classList.add('photo-card');
+
+                        const img = document.createElement('img');
+                        img.src = item.links[0].href;
+                        img.alt = item.data[0].title;
+                        img.classList.add('thumbnail');
+                        img.onclick = () => openModal(item.links[0].href, item.data[0].title);
+
+                        const caption = document.createElement('p');
+                        caption.classList.add('photo-caption');
+                        caption.textContent = item.data[0].title;
+
+                        photoCard.appendChild(img);
+                        photoCard.appendChild(caption);
+                        resultsContainer.appendChild(photoCard);
+                    });
+                });
+        }
+
+        function openModal(imageSrc, captionText) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modal.style.display = 'flex';
+            modalImage.src = imageSrc;
+            modalCaption.textContent = captionText;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

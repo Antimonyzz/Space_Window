@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APOD</title>
+    <link rel="stylesheet" href="apod-style.css">
+    <link href="https://fonts.cdnfonts.com/css/audiowide" rel="stylesheet">
+</head>
+<body>
+    <h1>Astronomy Picture of the Day</h1>
+    <div class="rover-buttons">
+        <div class="container-2" onclick="showGallery(); this.style.display='none';">
+            <div class="btn btn-two">
+                <span>Галерея фото</span>
+            </div>
+        </div>
+    </div>
+    <div id="apod-container"></div>
+    <div id="apod-gallery" style="display:none;">
+        <div class="gallery-navigation">
+            <button onclick="previousImage()">&#10094;</button>
+            <div id="gallery-container">
+                <img id="gallery-image" src="" alt="">
+                <div id="gallery-caption"></div>
+            </div>
+            <button onclick="nextImage()">&#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        let galleryData = [];
+        let currentImageIndex = 0;
+
+        // Функция для отображения текущего APOD
+        fetch('/api/apod')
+            .then(response => response.json())
+            .then(data => {
+                const apodContainer = document.getElementById('apod-container');
+                apodContainer.innerHTML = `
+                    <h2>${data.title}</h2>
+                    <img src="${data.url}" alt="${data.title}" style="max-width: 100%; height: auto;">
+                    <p>${data.explanation}</p>
+                `;
+            });
+
+        // Функция для отображения галереи APOD за последнюю неделю
+        function showGallery() {
+            fetch('/api/apod-week')
+                .then(response => response.json())
+                .then(data => {
+                    galleryData = data;
+                    currentImageIndex = 0;
+                    displayImage();
+                    
+                    document.getElementById('apod-container').style.display = 'none';
+                    document.getElementById('apod-gallery').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching APOD data for the past week:', error);
+                    alert('Error loading gallery');
+                });
+        }
+
+        // Отображение текущего изображения и описания в галерее с плавной анимацией
+        function displayImage() {
+            const imageElement = document.getElementById('gallery-image');
+            const captionElement = document.getElementById('gallery-caption');
+
+            if (galleryData.length > 0) {
+                const currentData = galleryData[currentImageIndex];
+
+                // Убираем изображение с анимацией
+                imageElement.classList.remove('visible');
+
+                setTimeout(() => {
+                    // Обновляем источник изображения и текст после исчезновения
+                    imageElement.src = currentData.url;
+                    imageElement.alt = currentData.title;
+                    captionElement.innerHTML = `<h3>${currentData.title}</h3><p>${currentData.explanation}</p>`;
+
+                    // Плавное появление изображения
+                    imageElement.classList.add('visible');
+                }, 500); // Пауза до появления нового изображения
+            }
+        }
+
+        // Переключение к следующему изображению
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % galleryData.length;
+            displayImage();
+        }
+
+        // Переключение к предыдущему изображению
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + galleryData.length) % galleryData.length;
+            displayImage();
+        }
+    </script>
+</body>
+</html>

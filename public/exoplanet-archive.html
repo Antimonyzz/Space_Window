@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exoplanet Gallery</title>
+    <link rel="stylesheet" href="exoplanet-style.css">
+    <link href="https://fonts.cdnfonts.com/css/audiowide" rel="stylesheet">
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const response = await fetch('/api/exoplanets');
+                const exoplanets = await response.json();
+
+                const gallery = document.getElementById('exoplanet-gallery');
+                exoplanets.forEach(planet => {
+                    const planetCard = document.createElement('div');
+                    planetCard.className = 'planet-card';
+
+                    planetCard.innerHTML = `
+                        <img src="${planet.url}" alt="${planet.title}" class="planet-image">
+                        <h2>${planet.title}</h2>
+                        <p>${planet.explanation}</p>
+                    `;
+                    gallery.appendChild(planetCard);
+                });
+            } catch (error) {
+                console.error('Error loading exoplanets:', error);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Exoplanet Gallery</h1>
+        <div id="exoplanet-gallery" class="gallery"></div>
+    </div>
+</body>
+</html>

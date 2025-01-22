@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Window</title>
+    <!-- Импорт шрифта Audiowide -->
+    <link href="https://fonts.cdnfonts.com/css/audiowide" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="particles-background" class="vertical-centered-box"></div>
+    <div id="particles-foreground" class="vertical-centered-box"></div>
+
+    <div class="container">
+        <h1>Space Window</h1>
+        <div class="buttons">
+            <div class="rover-buttons">
+                <div class="container-2" onclick="window.location.href='/apod';">
+                    <div class="btn btn-two">
+                        <span>Картинка дня</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rover-buttons">
+                <div class="container-2" onclick="window.location.href='/exoplanet-archive';">
+                    <div class="btn btn-two">
+                        <span>Архив экзопланет</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rover-buttons">
+                <div class="container-2" onclick="window.location.href='/nasa-search';">
+                    <div class="btn btn-two">
+                        <span>Библиотека фото</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rover-buttons">
+                <div class="container-2" onclick="window.location.href='/rover-photos';">
+                    <div class="btn btn-two">
+                        <span>Фото с ровера</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="particles.js"></script>
+</body>
+</html>

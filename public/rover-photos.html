@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Rover Photos</title>
+    <link rel="stylesheet" href="style-rover.css">
+    <link href="https://fonts.cdnfonts.com/css/audiowide" rel="stylesheet">
+</head>
+<body>
+    <div class="rover-container">
+        <h1>Mars Rover Photos</h1>
+        <div class="rover-buttons">
+            <div class="container-2" onclick="loadRoverPhotos('Curiosity'); this.style.display='none';">
+                <div class="btn btn-two">
+                    <span>Perseverance</span>
+                </div>
+            </div>
+        </div>
+        <div id="rover-photo-gallery" class="rover-gallery"></div>
+    </div>
+
+    <!-- Модальное окно для отображения изображения в большом размере -->
+    <div id="rover-image-modal" class="rover-modal">
+        <span class="rover-close" onclick="closeModal()">&times;</span>
+        <figure>
+            <img id="rover-modal-image" class="rover-modal-content">
+            <figcaption id="rover-modal-caption" class="rover-modal-caption"></figcaption>
+        </figure>
+    </div>
+
+    <script>
+        async function loadRoverPhotos(rover) {
+            try {
+                const response = await fetch(`/api/rover-photos?rover=${rover}`);
+                const photos = await response.json();
+                
+                const gallery = document.getElementById('rover-photo-gallery');
+                gallery.innerHTML = ''; // Очищаем галерею перед загрузкой новых фото
+
+                if (photos.length === 0) {
+                    gallery.innerHTML = `<p>No photos available for ${rover}.</p>`;
+                    return;
+                }
+
+                photos.forEach(photo => {
+                    const photoCard = document.createElement('div');
+                    photoCard.classList.add('rover-photo-card');
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.img_src;
+                    img.alt = `Mars photo by ${rover}`;
+                    img.classList.add('rover-thumbnail'); // Класс миниатюры
+                    img.onclick = () => openModal(photo.img_src, `Date: ${photo.earth_date}`); // Открытие модального окна
+
+                    photoCard.appendChild(img);
+                    const dateCaption = document.createElement('p');
+                    dateCaption.textContent = photo.earth_date;
+                    photoCard.appendChild(dateCaption);
+
+                    gallery.appendChild(photoCard);
+                });
+            } catch (error) {
+                console.error('Error loading rover photos:', error);
+            }
+        }
+
+        // Функция для открытия модального окна
+        function openModal(imageSrc, captionText) {
+            const modal = document.getElementById('rover-image-modal');
+            const modalImage = document.getElementById('rover-modal-image');
+            const modalCaption = document.getElementById('rover-modal-caption');
+
+            modal.style.display = 'flex';
+            modalImage.src = imageSrc;
+            modalCaption.textContent = captionText;
+        }
+
+        // Функция для закрытия модального окна
+        function closeModal() {
+            const modal = document.getElementById('rover-image-modal');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
